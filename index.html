@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<title>AI Detective Treasure — MIL Game</title>
+<meta name="description" content="A playful media & information literacy party game. Spin the wheel, land on a topic, and put your AI detective skills to the test.">
+<meta name="theme-color" content="#166D88">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect x='4' y='4' width='44' height='44' rx='12' fill='%235CD1DE'/%3E%3Crect x='52' y='4' width='44' height='44' rx='12' fill='%23DB4A69'/%3E%3Crect x='4' y='52' width='44' height='44' rx='12' fill='%23F5A776'/%3E%3Crect x='52' y='52' width='44' height='44' rx='12' fill='%2307A465'/%3E%3C/svg%3E">
+
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="stage">
+  <div class="phone-frame" id="phoneFrame">
+
+    <!-- Persistent round pill (shown during gameplay) -->
+    <div class="round-pill" id="roundPill" hidden><span id="roundPillText">Round 1</span></div>
+
+    <!-- Persistent home button (shown on every screen except splash & menu) -->
+    <button class="home-btn" id="homeBtn" type="button" aria-label="Back to main menu" hidden>
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9a1 1 0 0 0 1 1H9a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h2.5a1 1 0 0 0 1-1v-9"/></svg>
+    </button>
+
+    <!-- ============ SPLASH SCREEN ============ -->
+    <section class="screen active" data-screen="splash" aria-label="Welcome splash">
+      <button class="splash-tap-target" id="splashTapTarget" type="button">
+        <div class="splash-inner">
+          <p class="eyebrow">A Media &amp; Information Literacy Party Game</p>
+          <div class="logo-grid" aria-hidden="true">
+            <span class="tile tile-blue">AI</span>
+            <span class="tile tile-red">DETEC<br>TIVE</span>
+            <span class="tile tile-orange">TREA</span>
+            <span class="tile tile-green">SURE</span>
+          </div>
+
+          <ul class="legend-board" aria-hidden="true">
+            <li class="legend-item legend-red"><span class="dot"></span>Ice Breaking</li>
+            <li class="legend-item legend-orange"><span class="dot"></span>AI Deepfake</li>
+            <li class="legend-item legend-blue"><span class="dot"></span>Misinformation</li>
+            <li class="legend-item legend-green"><span class="dot"></span>AI Language</li>
+          </ul>
+
+          <p class="tap-prompt">Tap anywhere to start</p>
+        </div>
+      </button>
+    </section>
+
+    <!-- ============ MAIN MENU ============ -->
+    <section class="screen" data-screen="menu" aria-label="Main menu">
+      <div class="screen-inner">
+        <div class="logo-grid">
+          <span class="tile tile-blue">AI</span>
+          <span class="tile tile-red">DETEC<br>TIVE</span>
+          <span class="tile tile-orange">TREA</span>
+          <span class="tile tile-green">SURE</span>
+        </div>
+
+        <nav class="menu-actions" aria-label="Game modes">
+          <button class="btn btn-blue btn-lg" id="btnPlay" type="button">Play</button>
+          <button class="btn btn-red btn-lg" id="btnMultiplayer" type="button">Multi Player</button>
+          <button class="btn btn-orange btn-lg" id="btnTutorial" type="button">Tutorial</button>
+          <button class="btn btn-green btn-sm" id="btnPolicy" type="button">Policy</button>
+        </nav>
+      </div>
+    </section>
+
+    <!-- ============ PLAYER COUNT SELECT ============ -->
+    <section class="screen" data-screen="playerCount" aria-label="Choose number of players">
+      <div class="screen-inner">
+        <div class="logo-grid logo-grid-sm">
+          <span class="tile tile-blue">AI</span>
+          <span class="tile tile-red">DETEC<br>TIVE</span>
+          <span class="tile tile-orange">TREA</span>
+          <span class="tile tile-green">SURE</span>
+        </div>
+        <h1 class="screen-title">How many detectives?</h1>
+        <nav class="menu-actions" aria-label="Player count">
+          <button class="btn btn-blue btn-lg" data-players="2" type="button">2 Players</button>
+          <button class="btn btn-red btn-lg" data-players="3" type="button">3 Players</button>
+          <button class="btn btn-orange btn-lg" data-players="4" type="button">4 Players</button>
+        </nav>
+      </div>
+    </section>
+
+    <!-- ============ PLAYER CHANCE (choose who goes) ============ -->
+    <section class="screen" data-screen="playerChance" aria-label="Choose the next player">
+      <div class="screen-inner">
+        <div class="chance-label" id="chanceLabel">Tap together!</div>
+        <p class="chance-status" id="chanceStatus" role="status" aria-live="polite">Everyone place a finger on the pad below</p>
+
+        <div class="chance-pad" id="chancePad">
+          <p class="chance-pad-hint" id="chancePadHint">Press &amp; hold together</p>
+        </div>
+
+        <button class="btn btn-ghost" id="chanceRetry" type="button" hidden>Try again</button>
+      </div>
+    </section>
+
+    <!-- ============ SPIN WHEEL ============ -->
+    <section class="screen" data-screen="wheel" aria-label="Spin the wheel">
+      <div class="screen-inner">
+        <div class="turn-badge" id="turnBadge" hidden></div>
+
+        <button class="btn btn-blue btn-spin" id="btnSpin" type="button">Spin</button>
+
+        <div class="wheel-wrap">
+          <div class="wheel-pointer" aria-hidden="true"></div>
+          <div class="wheel" id="wheel" aria-hidden="true">
+            <div class="wheel-hub"></div>
+          </div>
+        </div>
+
+        <p class="wheel-result" id="wheelResult" role="status" aria-live="polite">&nbsp;</p>
+      </div>
+    </section>
+
+    <!-- ============ QUESTION CARD ============ -->
+    <section class="screen" data-screen="card" aria-label="Question card">
+      <div class="screen-inner screen-inner-card">
+        <div class="category-pill" id="categoryPill"></div>
+        <div class="card-frame">
+          <img class="card-image" id="cardImage" alt="" width="760" height="1065">
+        </div>
+        <button class="btn btn-green btn-lg" id="btnNextTurn" type="button">Next Turn ▶</button>
+      </div>
+    </section>
+
+    <!-- ============ TUTORIAL ============ -->
+    <section class="screen" data-screen="tutorial" aria-label="Tutorial">
+      <div class="screen-inner screen-inner-scroll">
+        <div class="logo-grid logo-grid-sm">
+          <span class="tile tile-blue">AI</span>
+          <span class="tile tile-red">DETEC<br>TIVE</span>
+          <span class="tile tile-orange">TREA</span>
+          <span class="tile tile-green">SURE</span>
+        </div>
+        <h1 class="screen-title screen-title-outline">Tutorial</h1>
+
+        <div class="info-card">
+          <h2 class="info-card-title">Welcome, Little Detective!</h2>
+          <p>Now you're going to be a detective. Your task is to learn how to tell the real ones from the fake ones while playing with your friends. Let's take a look at how to play.</p>
+          <ul class="rule-list">
+            <li>This board game can be played by 2 to 4 people.</li>
+            <li>Each player uses one character as a token on the game board.</li>
+            <li>Spin the wheel to see which colour challenge you'll face.</li>
+            <li>As you land, you'll get one of four colours — red, orange, blue, or green — each with a different challenge.</li>
+            <li class="rule-red"><strong>Red</strong> — face an "Ice Breaking" challenge with unique and exciting tasks.</li>
+            <li class="rule-orange"><strong>Orange</strong> — face an "AI Deepfake" challenge, guessing whether an image was made by AI or a human.</li>
+            <li class="rule-blue"><strong>Blue</strong> — face a "Misinformation" challenge, deciding if information is true or an AI-generated hoax.</li>
+            <li class="rule-green"><strong>Green</strong> — face an "AI Language" challenge, guessing if a sentence was written by a human or AI.</li>
+            <li>After receiving your challenge, answer it and share your reasoning with your friends, then discuss it together if needed.</li>
+            <li>Continue taking turns until someone reaches the finish line!</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ POLICY ============ -->
+    <section class="screen" data-screen="policy" aria-label="Game policy">
+      <div class="screen-inner screen-inner-scroll">
+        <div class="logo-grid logo-grid-sm">
+          <span class="tile tile-blue">AI</span>
+          <span class="tile tile-red">DETEC<br>TIVE</span>
+          <span class="tile tile-orange">TREA</span>
+          <span class="tile tile-green">SURE</span>
+        </div>
+        <h1 class="screen-title screen-title-outline">Policy</h1>
+
+        <div class="info-card">
+          <h2 class="info-card-title">House Rules &amp; Fair Play</h2>
+          <ul class="rule-list">
+            <li>Be kind — this game is about learning together, not winning at all costs.</li>
+            <li>Answer honestly before checking with the group. Guessing out loud is part of the fun!</li>
+            <li>If a challenge sparks a disagreement, talk it through — that's the whole point of media literacy.</li>
+            <li>Take turns fairly. If the "tap together" chance ever feels stuck, hit Try Again.</li>
+          </ul>
+          <h2 class="info-card-title info-card-title-spaced">Privacy</h2>
+          <ul class="rule-list">
+            <li>This game runs entirely in your browser. No accounts, no tracking, no data ever leaves your device.</li>
+            <li>Nothing is saved after you close the tab — every new game starts fresh.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<script src="js/cards.js"></script>
+<script src="js/wheel.js"></script>
+<script src="js/playerChance.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
