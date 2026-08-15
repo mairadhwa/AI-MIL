@@ -1,8 +1,7 @@
 # AI Detective Treasure 
 
-A browser-based Media & Information Literacy (MIL) party game, built for UNESCO MIL Hackathon. Spin the wheel, land on a topic, and put your AI-detective skills to the test with your friends.
+A browser based Media & Information Literacy (MIL) party game, built for UNESCO MIL Hackathon. Spin the wheel, land on a topic, and put your AI-detective skills to the test with your friends.
 
-No build step, no dependencies, no backend — just static HTML/CSS/JS, ready for GitHub Pages.
 
 ## How it works
 
